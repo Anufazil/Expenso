@@ -1,0 +1,22 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Rupee glyph, centered -->
+  <text x="256" y="330" font-family="Arial, Helvetica, sans-serif" font-size="270" font-weight="700"
+        fill="#ffffff" text-anchor="middle">₹</text>
+
+  <!-- Small analytics bars accent, bottom-right -->
+  <g fill="#ffffff" fill-opacity="0.9">
+    <rect x="352" y="368" width="24" height="40" rx="4"/>
+    <rect x="384" y="348" width="24" height="60" rx="4"/>
+    <rect x="416" y="328" width="24" height="80" rx="4"/>
+  </g>
+</svg>
