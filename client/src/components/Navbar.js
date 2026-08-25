@@ -25,7 +25,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center gap-2">
-            <img src="/logo.svg" alt="Expenso" className="w-8 h-8 rounded-lg" />
+            <img src="/logo.png" alt="Expenso" className="w-8 h-8 rounded-lg" />
             <span className="text-lg font-semibold text-gray-800">Expenso</span>
           </div>
 

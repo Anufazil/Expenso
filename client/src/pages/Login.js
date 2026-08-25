@@ -31,7 +31,7 @@ const Login = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <img src="/logo.svg" alt="Expense Tracker" className="w-14 h-14 rounded-2xl mx-auto mb-3" />
+          <img src="/logo.png" alt="Expense Tracker" className="w-14 h-14 rounded-2xl mx-auto mb-3" />
           <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
           <p className="text-sm text-gray-500 mt-1">Log in to manage your expenses</p>
         </div>
