@@ -58,3 +58,16 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+@layer base {
+  select option,
+  select optgroup {
+    background-color: #ffffff;
+    color: #111827;
+  }
+
+  html.dark select option,
+  html.dark select optgroup {
+    background-color: #171717;
+    color: #ffffff;
+  }
+}
