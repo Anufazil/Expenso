@@ -253,6 +253,64 @@ const getMonthlyAnalytics = async (req, res) => {
   }
 };
 
+// @route   GET /api/expenses/report?month=YYYY-MM
+// @desc    Everything for one calendar month: ALL transactions (no pagination),
+//          totals and an expense-by-category breakdown. Powers the monthly
+//          report page and its PDF/CSV export.
+// @access  Private
+const getMonthlyReport = async (req, res) => {
+  try {
+    const { month } = req.query;
+
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month || '')) {
+      return res.status(400).json({ message: 'Please provide a month in YYYY-MM format' });
+    }
+
+    const [year, mon] = month.split('-').map(Number);
+    // Dates are stored as UTC midnight (from <input type="date">), so use UTC bounds
+    const start = new Date(Date.UTC(year, mon - 1, 1));
+    const end = new Date(Date.UTC(year, mon, 1)); // exclusive
+
+    const transactions = await Expense.find({
+      user: req.user._id,
+      date: { $gte: start, $lt: end },
+    }).sort({ date: -1, createdAt: -1 });
+
+    const round = (n) => Math.round(n * 100) / 100;
+    let income = 0;
+    let expense = 0;
+    const byCategory = {};
+
+    transactions.forEach((t) => {
+      if (t.type === 'income') {
+        income += t.amount;
+      } else {
+        expense += t.amount;
+        byCategory[t.category] = (byCategory[t.category] || 0) + t.amount;
+      }
+    });
+
+    const categoryBreakdown = Object.entries(byCategory)
+      .map(([category, total]) => ({ category, total: round(total) }))
+      .sort((a, b) => b.total - a.total);
+
+    return res.status(200).json({
+      month,
+      totals: {
+        totalIncome: round(income),
+        totalExpense: round(expense),
+        balance: round(income - expense),
+        count: transactions.length,
+      },
+      categoryBreakdown,
+      transactions,
+    });
+  } catch (error) {
+    console.error('Get monthly report error:', error);
+    return res.status(500).json({ message: 'Server error while building the monthly report' });
+  }
+};
+
 module.exports = {
   getExpenses,
   createExpense,
@@ -261,4 +319,5 @@ module.exports = {
   getSummary,
   getExpensesByCategory,
   getMonthlyAnalytics,
+  getMonthlyReport,
 };

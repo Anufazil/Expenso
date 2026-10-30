@@ -69,11 +69,11 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingTransaction }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/40">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-4">
+      <div className="relative max-h-[92vh] w-full overflow-y-auto rounded-t-[28px] border border-gray-200 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-neutral-950 sm:max-w-md sm:rounded-[28px] sm:p-6">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white"
           aria-label="Close"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -81,12 +81,12 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingTransaction }) => {
           </svg>
         </button>
 
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        <h2 className="mb-4 pr-8 text-lg font-semibold tracking-tight">
           {editingTransaction ? 'Edit Transaction' : 'Add Transaction'}
         </h2>
 
         {formError && (
-          <div className="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          <div className="alert-error mb-4">
             {formError}
           </div>
         )}
@@ -96,10 +96,10 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingTransaction }) => {
             <button
               type="button"
               onClick={() => setForm((prev) => ({ ...prev, type: 'expense' }))}
-              className={`py-2 rounded-lg text-sm font-medium border transition-colors ${
+              className={`rounded-xl border py-2 text-sm font-medium transition-colors ${
                 form.type === 'expense'
-                  ? 'bg-red-50 border-red-300 text-red-700'
-                  : 'bg-gray-50 border-gray-200 text-gray-500'
+                  ? 'border-red-300 bg-red-50 text-red-700 dark:border-red-500/40 dark:bg-red-500/15 dark:text-red-300'
+                  : 'border-gray-200 bg-gray-50 text-gray-500 dark:border-white/10 dark:bg-white/5 dark:text-white/50'
               }`}
             >
               Expense
@@ -107,10 +107,10 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingTransaction }) => {
             <button
               type="button"
               onClick={() => setForm((prev) => ({ ...prev, type: 'income' }))}
-              className={`py-2 rounded-lg text-sm font-medium border transition-colors ${
+              className={`rounded-xl border py-2 text-sm font-medium transition-colors ${
                 form.type === 'income'
-                  ? 'bg-green-50 border-green-300 text-green-700'
-                  : 'bg-gray-50 border-gray-200 text-gray-500'
+                  ? 'border-green-300 bg-green-50 text-green-700 dark:border-green-500/40 dark:bg-green-500/15 dark:text-green-300'
+                  : 'border-gray-200 bg-gray-50 text-gray-500 dark:border-white/10 dark:bg-white/5 dark:text-white/50'
               }`}
             >
               Income
@@ -118,20 +118,20 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingTransaction }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <label className="label">Title</label>
             <input
               type="text"
               name="title"
               value={form.title}
               onChange={handleChange}
               placeholder="e.g. Grocery shopping"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="input"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+              <label className="label">Amount</label>
               <input
                 type="number"
                 step="0.01"
@@ -140,28 +140,28 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingTransaction }) => {
                 value={form.amount}
                 onChange={handleChange}
                 placeholder="0.00"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="input"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <label className="label">Date</label>
               <input
                 type="date"
                 name="date"
                 value={form.date}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="input"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label className="label">Category</label>
             <select
               name="category"
               value={form.category}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="input"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
@@ -172,20 +172,20 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingTransaction }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
+            <label className="label">Notes (optional)</label>
             <textarea
               name="notes"
               value={form.notes}
               onChange={handleChange}
               rows={2}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="input"
             />
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-60 text-white font-medium rounded-lg py-2.5 text-sm transition-colors"
+            className="btn-primary w-full"
           >
             {submitting ? 'Saving...' : editingTransaction ? 'Update Transaction' : 'Add Transaction'}
           </button>

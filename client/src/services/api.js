@@ -40,6 +40,7 @@ api.interceptors.response.use(
 export const registerUser = (data) => api.post('/auth/register', data);
 export const loginUser = (data) => api.post('/auth/login', data);
 export const getCurrentUser = () => api.get('/auth/me');
+export const deleteAccountRequest = (password) => api.delete('/auth/account', { data: { password } });
 
 // ----- Expenses / Transactions -----
 export const getTransactions = (params) => api.get('/expenses', { params });
@@ -49,5 +50,6 @@ export const deleteTransaction = (id) => api.delete(`/expenses/${id}`);
 export const getSummary = () => api.get('/expenses/summary');
 export const getCategoryAnalytics = () => api.get('/expenses/analytics/by-category');
 export const getMonthlyAnalytics = () => api.get('/expenses/analytics/monthly');
+export const getMonthlyReport = (month) => api.get('/expenses/report', { params: { month } });
 
 export default api;

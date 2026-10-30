@@ -11,15 +11,13 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-sm text-gray-400">Loading...</p>
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-sm text-gray-400 dark:text-white/40">Loading...</p>
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
 
   return children;
 };

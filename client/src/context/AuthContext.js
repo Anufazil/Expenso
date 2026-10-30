@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
-import { loginUser, registerUser, getCurrentUser } from '../services/api';
+import { loginUser, registerUser, getCurrentUser, deleteAccountRequest } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -74,6 +74,20 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   }, []);
 
+  // Permanently deletes the account + all transactions, then clears the session
+  const deleteAccount = useCallback(async (password) => {
+    try {
+      await deleteAccountRequest(password);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setToken(null);
+      setUser(null);
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message || 'Could not delete account. Please try again.' };
+    }
+  }, []);
+
   const value = {
     user,
     token,
@@ -83,6 +97,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    deleteAccount,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

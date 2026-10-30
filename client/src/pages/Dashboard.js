@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import SummaryCard from '../components/SummaryCard';
 import ExpenseForm from '../components/ExpenseForm';
 import ExpenseList from '../components/ExpenseList';
+import TransactionDetails from '../components/TransactionDetails';
 import CategoryPieChart from '../components/Charts/CategoryPieChart';
 import MonthlyBarChart from '../components/Charts/MonthlyBarChart';
 import {
@@ -18,6 +20,7 @@ import {
 const emptyFilters = { type: '', category: '', startDate: '', endDate: '' };
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [summary, setSummary] = useState({ totalIncome: 0, totalExpense: 0, balance: 0 });
   const [transactions, setTransactions] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
@@ -28,6 +31,7 @@ const Dashboard = () => {
   const [loadingList, setLoadingList] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
+  const [viewingTransaction, setViewingTransaction] = useState(null);
   const [pageError, setPageError] = useState('');
 
   const fetchSummary = useCallback(async () => {
@@ -99,6 +103,11 @@ const Dashboard = () => {
     setIsFormOpen(true);
   };
 
+  const handleEditFromDetails = (transaction) => {
+    setViewingTransaction(null);
+    handleOpenEdit(transaction);
+  };
+
   const handleFormSubmit = async (formData) => {
     if (editingTransaction) {
       await updateTransaction(editingTransaction._id, formData);
@@ -114,6 +123,7 @@ const Dashboard = () => {
     if (!window.confirm('Delete this transaction? This cannot be undone.')) return;
     try {
       await deleteTransaction(id);
+      setViewingTransaction(null);
       refreshAll();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to delete transaction.');
@@ -121,43 +131,51 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-6">
+      <main className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-sm text-gray-500">Here's an overview of your finances</p>
+            <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-sm text-gray-500 dark:text-white/50">Here's an overview of your finances</p>
           </div>
-          <button
-            onClick={handleOpenAdd}
-            className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg px-4 py-2.5 transition-colors flex items-center gap-1.5"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Add Transaction
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link to="/monthly" className="btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z" />
+              </svg>
+              Monthly Report
+            </Link>
+            <button
+              onClick={handleOpenAdd}
+              className="btn-primary"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add Transaction
+            </button>
+          </div>
         </div>
 
         {pageError && (
-          <div className="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          <div className="alert-error mb-4">
             {pageError}
           </div>
         )}
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 mb-4 sm:mb-6">
           <SummaryCard title="Total Balance" amount={summary.balance} variant="balance" />
           <SummaryCard title="Total Income" amount={summary.totalIncome} variant="income" />
           <SummaryCard title="Total Expense" amount={summary.totalExpense} variant="expense" />
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 mb-4 sm:mb-6">
           <CategoryPieChart data={categoryData} />
-          <MonthlyBarChart data={monthlyData} />
+          <MonthlyBarChart data={monthlyData} onSelectMonth={(m) => navigate(`/monthly?month=${m}`)} />
         </div>
 
         {/* Transaction History */}
@@ -167,11 +185,19 @@ const Dashboard = () => {
           onFilterChange={setFilters}
           pagination={pagination}
           onPageChange={fetchTransactions}
+          onView={setViewingTransaction}
           onEdit={handleOpenEdit}
           onDelete={handleDelete}
           loading={loadingList}
         />
       </main>
+
+      <TransactionDetails
+        transaction={viewingTransaction}
+        onClose={() => setViewingTransaction(null)}
+        onEdit={handleEditFromDetails}
+        onDelete={handleDelete}
+      />
 
       <ExpenseForm
         isOpen={isFormOpen}

@@ -8,6 +8,7 @@ const {
   getSummary,
   getExpensesByCategory,
   getMonthlyAnalytics,
+  getMonthlyReport,
 } = require('../controllers/expenseController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -18,6 +19,7 @@ router.route('/').get(getExpenses).post(createExpense);
 router.route('/:id').put(updateExpense).delete(deleteExpense);
 
 router.get('/summary', getSummary);
+router.get('/report', getMonthlyReport);
 router.get('/analytics/by-category', getExpensesByCategory);
 router.get('/analytics/monthly', getMonthlyAnalytics);
 

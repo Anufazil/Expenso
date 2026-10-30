@@ -1,6 +1,6 @@
-# Expense Tracker (MERN Stack)
+# Expenso (MERN Stack)
 
-A full-stack expense tracker with JWT authentication and a visual analytics
+Expenso is a full-stack expense tracker with JWT authentication and a visual analytics
 dashboard (summary cards, category breakdown doughnut chart, and a monthly
 income-vs-expense bar chart).
 
@@ -13,7 +13,7 @@ income-vs-expense bar chart).
 ## Project Structure
 
 ```
-expense-tracker/
+expenso/
 ├── server/
 │   ├── config/db.js
 │   ├── models/ (User.js, Expense.js)
@@ -49,7 +49,7 @@ cp .env.example .env
 Edit `server/.env`:
 
 ```
-MONGO_URI=mongodb://127.0.0.1:27017/expense_tracker
+MONGO_URI=mongodb://127.0.0.1:27017/expenso
 JWT_SECRET=some_long_random_string
 JWT_EXPIRES_IN=7d
 PORT=5000
@@ -58,7 +58,7 @@ CLIENT_URL=http://localhost:3000
 
 If you're using MongoDB Atlas instead of a local database, replace
 `MONGO_URI` with your Atlas connection string, e.g.:
-`mongodb+srv://<user>:<password>@cluster0.mongodb.net/expense_tracker`
+`mongodb+srv://<user>:<password>@cluster0.mongodb.net/expenso`
 
 Start the API:
 
@@ -115,6 +115,8 @@ you'll be redirected to `/dashboard`.
 | POST   | /api/auth/register                  | Register a new user                   |
 | POST   | /api/auth/login                     | Login, returns JWT                    |
 | GET    | /api/auth/me                        | Get current logged-in user            |
+| GET    | /api/expenses/report?month=YYYY-MM  | All transactions + totals + category breakdown for one month |
+| DELETE | /api/auth/account                   | Delete account + all data (body: `{ password }`) |
 | GET    | /api/expenses                       | List transactions (filters + paging)  |
 | POST   | /api/expenses                       | Create a transaction                  |
 | PUT    | /api/expenses/:id                   | Update a transaction                  |
@@ -122,6 +124,22 @@ you'll be redirected to `/dashboard`.
 | GET    | /api/expenses/summary               | Total income/expense/balance          |
 | GET    | /api/expenses/analytics/by-category | Expense totals grouped by category    |
 | GET    | /api/expenses/analytics/monthly     | Income vs expense grouped by month    |
+
+## UI Features
+
+- **Dark / light theme** - toggle in the navbar; follows your system theme automatically
+  until you pick one. Settings -> Appearance offers System / Light / Dark.
+- **Transaction details** - click any row in the history to open a read-only view with
+  every field (type, category, date, notes, created/updated, ID), with Edit / Delete.
+- **Show/hide password** - eye button on the login, register and delete-account fields.
+- **Monthly report** (`/monthly`) - pick any month/year (arrows, dropdowns, or click a bar on the
+  dashboard's monthly chart) to see every transaction of that month grouped by day, with totals and a
+  category chart. Click a transaction for its full details (read-only).
+- **Download** the month as a **PDF** (summary, category breakdown, full transaction table) or a
+  **CSV** (opens in Excel/Sheets). PDFs use "Rs." because the built-in PDF font has no rupee glyph.
+- **Settings page** (`/settings`) - account info, theme, and **Delete account**
+  (requires your password and typing `DELETE`; removes the user and all transactions).
+- Fully responsive: modals become bottom sheets on phones, the history is a touch-friendly list.
 
 ## Notes
 

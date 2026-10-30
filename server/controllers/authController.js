@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Expense = require('../models/Expense');
 
 // Helper to sign a JWT for a given user id
 const generateToken = (id) => {
@@ -77,4 +78,33 @@ const getMe = async (req, res) => {
   return res.status(200).json(req.user);
 };
 
-module.exports = { registerUser, loginUser, getMe };
+// @route   DELETE /api/auth/account
+// @desc    Permanently delete the logged-in user and all of their transactions.
+//          Requires the current password as confirmation.
+// @access  Private
+// NOTE: a wrong password returns 400 (not 401) so the client's global 401
+// handler doesn't treat it as an expired session.
+const deleteAccount = async (req, res) => {
+  try {
+    const { password } = req.body || {};
+
+    if (!password) {
+      return res.status(400).json({ message: 'Please enter your password to confirm account deletion' });
+    }
+
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(400).json({ message: 'Incorrect password' });
+    }
+
+    await Expense.deleteMany({ user: user._id });
+    await User.deleteOne({ _id: user._id });
+
+    return res.status(200).json({ message: 'Account and all associated data deleted' });
+  } catch (error) {
+    console.error('Delete account error:', error);
+    return res.status(500).json({ message: 'Server error while deleting account' });
+  }
+};
+
+module.exports = { registerUser, loginUser, getMe, deleteAccount };
